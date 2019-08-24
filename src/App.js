@@ -1,9 +1,10 @@
-import Client from 'boardgame.io/client';
-import Game from 'boardgame.io/game';
+import { Game } from 'boardgame.io/core';
+import { Client } from 'boardgame.io/react';
 import { emptyCell, numOfRows, numOfColumns, playerDiscLookup } from './constants';
 import FourInARowBoard from './FourInARowBoard';
 
 const FourInARow = Game({
+  name: 'Four In A Row',
   setup: () => {
     const grid = {};
     for (var rowIdx = 0; rowIdx < numOfRows; rowIdx++) {
@@ -13,19 +14,21 @@ const FourInARow = Game({
   },
   moves: {
     selectColumn(G, ctx, columnIdx) {
-      let grid = Object.assign({}, G.grid);
       for (var rowIdx = numOfRows - 1; rowIdx >= 0; rowIdx--) {
-        if (grid[rowIdx][columnIdx] === emptyCell) {
-          grid[rowIdx][columnIdx] = playerDiscLookup[ctx.currentPlayer];
+        if (G.grid[rowIdx][columnIdx] === emptyCell) {
+          G.grid[rowIdx][columnIdx] = playerDiscLookup[ctx.currentPlayer];
           break;
         }
       }
-      return {...G, grid};
     },
   },
-  victory: (G, ctx) => {
-    return IsVictory(G.grid, ctx.currentPlayer) ? ctx.currentPlayer : null;
-  }
+  flow: {
+    endGameIf: (G, ctx) => {
+      if (IsVictory(G.grid, ctx.currentPlayer)) {
+        return { winner: ctx.currentPlayer };
+      }
+    },
+  },
 });
 
 function IsVictory(grid, player) {
@@ -70,6 +73,8 @@ function IsVictory(grid, player) {
       }
     }
   }
+
+  return false;
 }
 
 const App = Client({

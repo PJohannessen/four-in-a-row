@@ -9,12 +9,12 @@ class FourInARowBoard extends React.Component {
   onClick(columnIdx) {
     if (this.isActive(columnIdx)) {
       this.props.moves.selectColumn(columnIdx);
-      this.props.endTurn();
+      this.props.events.endTurn();
     }
   }
 
   isActive(columnIdx) {
-    if (this.props.ctx.winner !== null) return false;
+    if (this.props.ctx.gameover) return false;
     // If the top row of a column is not empty, we shouldn't allow another disc.
     if (this.props.G.grid[0][columnIdx] !== emptyCell) return false;
     return true;
@@ -22,7 +22,7 @@ class FourInARowBoard extends React.Component {
 
   render() {
     let message = '';
-    if (this.props.ctx.winner !== null) {
+    if (this.props.ctx.gameover) {
       message = <span>Winner: Player {playerDiscLookup[this.props.ctx.currentPlayer]}</span>;
     } else {
       message = <span>Current Player: Player {playerDiscLookup[this.props.ctx.currentPlayer]}</span>;
